@@ -45,9 +45,10 @@ d3.csv("data.csv").then(function(data) {
         .enter()
         .append("text")
         .attr("x", ((d) => {return x(d.smoker); }))
-        .attr("dx", "-0.65em")
         .attr("y", ((d) => {return y(d.heartAttack); }))
+        .attr("dx", "-0.65em")
         .attr("dy", "0.4em")
+        .attr("font-size", "10px")
         .text((d) => {return d.stateAbbr});
 
     // Add the X axis
