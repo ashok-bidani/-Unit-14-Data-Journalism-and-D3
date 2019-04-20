@@ -1,25 +1,43 @@
+//set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 40, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+
+//append the svg object to the body of the page
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("class", "chart")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 //get the data
-d3.csv("../../newdata/testdata.csv", function(error, data) {
-    if (error) throw error;
+d3.csv("testdata.csv").then(function(data) {
 
-    //format the data
+    //read the data values
     data.forEach(function(d) {
-        d.x = +d.x;
-        d.y = +d.y;
-    });
+    return {
+        smoker: +d.smoker,
+        heartAttack: +d.heartAttack};
+    })
 
-    //scale the range of the data
-    x.domain(d3.extent(data, function(d) {return d.x; }));
-    y.domain([0, d3.max(data, function(d) {return d.y; })]);
+    //set the scales' domains and ranges
+    var x = d3.scaleLinear()
+        .range([0, width])
+        .domain([d3.min(data, (d) => {return d.smoker; }), d3.max(data, (d) => {return d.smoker; })])
+    var y = d3.scaleLinear()
+        .range([height, 0])
+        .domain([d3.min(data, (d) => {return d.heartAttack; }), d3.max(data, (d) => {return d.heartAttack; })])
 
     //add a circle element for each data point
     svg.append("g")
         .selectAll("circle")
         .data(data)
         .join("circle")
-            .attr("cx", d => x(d.x))
-            .attr("cy", d => y(d.y))
-            .attr("r", 2);
+        .attr("cx", ((d) => {return x(d.smoker); }))
+        .attr("cy", ((d) => {return y(d.heartAttack); }))
+        .attr("r", 10);
     
     //add the X axis
     svg.append("g")
