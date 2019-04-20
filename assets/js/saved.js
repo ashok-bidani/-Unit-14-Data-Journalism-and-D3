@@ -14,9 +14,6 @@ d3.csv("../../newdata/testdata.csv", function(error, data) {
 
     //add a circle element for each data point
     svg.append("g")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 1.5)
-        .attr("fill", "none")
         .selectAll("circle")
         .data(data)
         .join("circle")
@@ -39,3 +36,27 @@ d3.csv("../../newdata/testdata.csv", function(error, data) {
 
 -------------------
 
+var dataset = [[5, 10], [10, 49], [15, 30], [20, 27], [25, 120], [30, 86]];
+
+var xScale = d3.scaleLinear()
+    .domain([0, d3.max(dataset, function(d) {return d[0]; })])
+    .range([0, width])
+    
+var yScale = d3.scaleLinear()
+    .domain([0, d3.max(dataset, function(d) { return d[1]; })])
+    .range([ height, 0 ]);
+    
+svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+    
+svg.append("g")
+    .call(d3.axisLeft(y));
+    
+svg.selectAll("circle")
+    .data(dataset)
+    .enter()
+    .append("circle")
+    .attr("cx", function (d) {return xScale(d[0]); })
+    .attr("cy", function (d) {return yScale(d[1]); })
+    .attr("r", 10); 
