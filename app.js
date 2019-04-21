@@ -17,9 +17,14 @@ d3.csv("data.csv").then(function(data) {
 
     // Read the data values
     data.forEach(function(d) {
-        d.smoker = +d.smoker;
-        d.heartAttack = +d.heartAttack;
         d.stateAbbr = d.stateAbbr;
+        d.stateName = d.stateName;
+        d.smoker = +d.smoker;
+        d.physicalActivity = +d.physicalActivity;
+        d.householdIncome = +d.householdIncome;
+        d.depression = +d.depression;
+        d.diabetes = +d.diabetes;
+        d.heartAttack = +d.heartAttack;
     });
 
     // Set the scales' domains and ranges
