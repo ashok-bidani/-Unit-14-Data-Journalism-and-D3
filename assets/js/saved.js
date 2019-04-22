@@ -66,3 +66,31 @@ d3.csv("data.csv").then(function(data) {
     //display the chart
     return svg.node();
 });
+
+----------------------------------------
+
+    // Y axis labels
+        
+        //"Depression Ever (%)" label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 20)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
+            .text("Depression Ever (%)");
+
+        //"Diabetes Ever (%)" label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 45)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
+            .text("Depression Ever (%)");            
+
+        //"Heart Attack Ever (%)" label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 70)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
+            .text("Heart Attack Ever (%)");

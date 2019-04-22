@@ -1,5 +1,5 @@
 // Set the dimensions and margins of the visual
-var margin = {top: 20, right: 20, bottom: 70, left: 70},
+var margin = {top: 20, right: 20, bottom: 70, left: 115},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -7,13 +7,13 @@ var margin = {top: 20, right: 20, bottom: 70, left: 70},
 // Append the svg object to the body of the page
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom + 70)
     .attr("class", "chart")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Get the data
-d3.csv("data.csv").then(function(data) {
+d3.csv("data/data.csv").then(function(data) {
 
     // Read the data values
     data.forEach(function(d) {
@@ -62,25 +62,59 @@ d3.csv("data.csv").then(function(data) {
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
-    // X axis label
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height + margin.top + 20)
-        .text("Smoker (%)");
+    // X axis labels
+
+        // "Smoker (%)" label
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", height + margin.top + 20)
+            .style("text-anchor", "middle")
+            .text("Smoker (%)");
+
+        // "Physical Activity Last Month (%)" label
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", height + margin.top + 45)
+            .style("text-anchor", "middle")
+            .text("Physical Activity Last Month (%)");
+
+        // "Household Income (Median)" label
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", height + margin.top + 70)
+            .style("text-anchor", "middle")
+            .text("Household Income (Median)");
 
     // Add the Y axis
     svg.append("g")
         .call(d3.axisLeft(y));
 
-    // Y axis label
-    svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-        .attr("x", 0 - (height / 2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("Heart Attack Ever (%)");
+    // Y axis labels
+        
+        //"Depression (%)" label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 70)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
+            .text("Depression (%)");       
+
+        //"Heart Attack Ever (%)" label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 45)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
+            .text("Heart Attack Ever (%)");
     
+        //"Diabetes Ever (%)" label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 20)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
+            .text("Diabetes Ever (%)"); 
+
     // Display the chart
     return svg.node();
 });
