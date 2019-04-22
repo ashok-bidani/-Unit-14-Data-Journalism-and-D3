@@ -43,7 +43,8 @@ d3.csv("data.csv").then(function(data) {
                 .attr("cx", ((d) => {return x(d.smoker); }))
                 .attr("cy", ((d) => {return y(d.heartAttack); }))
                 .attr("r", 12);
-
+    
+    // Add state labels to scatterplot circles
     svg.append("g")
         .selectAll("text")
         .data(data)
@@ -67,7 +68,7 @@ d3.csv("data.csv").then(function(data) {
         .attr("y", height + margin.top + 20)
         .text("Smoker (%)");
 
-    // add the Y axis
+    // Add the Y axis
     svg.append("g")
         .call(d3.axisLeft(y));
 
@@ -80,6 +81,6 @@ d3.csv("data.csv").then(function(data) {
         .style("text-anchor", "middle")
         .text("Heart Attack Ever (%)");
     
-    //display the chart
+    // Display the chart
     return svg.node();
 });
