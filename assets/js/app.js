@@ -12,10 +12,8 @@ var svg = d3.select("#chart").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Get the data
-d3.csv("data/data.csv").then(function(data) {
-
-    // Read the data values
+// Get the data and set up initial visualization
+var cdcData = d3.csv("data/data.csv").then(function(data) {
     data.forEach(function(d) {
         d.stateAbbr = d.stateAbbr;
         d.stateName = d.stateName;
@@ -26,28 +24,31 @@ d3.csv("data/data.csv").then(function(data) {
         d.diabetes = +d.diabetes;
         d.heartAttack = +d.heartAttack;
     });
+});
+
+console.log(cdcData[0]);
 
     // Set the scales' domains and ranges
     var x = d3.scaleLinear()
         .range([0, width])
-        .domain([0.9*(d3.min(data, (d) => {return d.smoker; })), 1.1*(d3.max(data, (d) => {return d.smoker; }))])
+        .domain([0.9*(d3.min(cdcData, (d) => {return d.smoker; })), 1.1*(d3.max(cdcData, (d) => {return d.smoker; }))])
     var y = d3.scaleLinear()
         .range([height, 0])
-        .domain([0.9*(d3.min(data, (d) => {return d.heartAttack; })), 1.1*(d3.max(data, (d) => {return d.heartAttack; }))]);
+        .domain([0.9*(d3.min(cdcData, (d) => {return d.heartAttack; })), 1.1*(d3.max(cdcData, (d) => {return d.heartAttack; }))]);
 
     // Add a circle element for each data point
-    circles = svg.append("g")
-                .selectAll("circle")
-                .data(data)
-                .join("circle")
-                .attr("cx", ((d) => {return x(d.smoker); }))
-                .attr("cy", ((d) => {return y(d.heartAttack); }))
-                .attr("r", 12);
+    var circles = svg.append("g")
+        .selectAll("circle")
+        .data(cdcData)
+        .join("circle")
+        .attr("cx", ((d) => {return x(d.smoker); }))
+        .attr("cy", ((d) => {return y(d.heartAttack); }))
+        .attr("r", 12);
     
     // Add state labels to scatterplot circles
     svg.append("g")
         .selectAll("text")
-        .data(data)
+        .data(cdcData)
         .enter()
         .append("text")
         .attr("x", ((d) => {return x(d.smoker); }))
@@ -65,21 +66,22 @@ d3.csv("data/data.csv").then(function(data) {
     // X axis labels
 
         // "Smoker (%)" label
-        svg.append("text")
+        smokerLabel = svg.append("text")
             .attr("x", width / 2)
             .attr("y", height + margin.top + 20)
             .style("text-anchor", "middle")
+            .attr("font-weight", 700)
             .text("Smoker (%)");
 
         // "Physical Activity Last Month (%)" label
-        svg.append("text")
+        physicalActivityLabel = svg.append("text")
             .attr("x", width / 2)
             .attr("y", height + margin.top + 45)
             .style("text-anchor", "middle")
             .text("Physical Activity Last Month (%)");
 
         // "Household Income (Median)" label
-        svg.append("text")
+        householdIncomeLabel = svg.append("text")
             .attr("x", width / 2)
             .attr("y", height + margin.top + 70)
             .style("text-anchor", "middle")
@@ -105,6 +107,7 @@ d3.csv("data/data.csv").then(function(data) {
             .attr("y", 0 - margin.left + 45)
             .attr("x", 0 - (height / 2))
             .style("text-anchor", "middle")
+            .attr("font-weight", 700)
             .text("Heart Attack Ever (%)");
     
         //"Diabetes Ever (%)" label
@@ -114,7 +117,3 @@ d3.csv("data/data.csv").then(function(data) {
             .attr("x", 0 - (height / 2))
             .style("text-anchor", "middle")
             .text("Diabetes Ever (%)"); 
-
-    // Display the chart
-    return svg.node();
-});
