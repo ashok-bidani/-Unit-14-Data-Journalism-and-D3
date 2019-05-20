@@ -12,8 +12,8 @@ var svg = d3.select("#chart").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Get the data
-d3.csv("data/data.csv").then(function(data) {
+// Create a function "generate" that will read in data and then take further functions to make the visualization
+function generate = d3.csv("data/data.csv").then(function(data) {
 
     // Read the data values
     data.forEach(function(d) {
