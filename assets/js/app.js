@@ -15,14 +15,14 @@ var svg = d3.select("#chart").append("svg")
 
 // DATA
 // Get the data and set up initial visualization. This includes a function "Run" which handles all of the visual aspects of the display.
-// Basically, we import the csv data and then create the visualization in the same section with the "Run" function.
+// Basically, I import the csv data and then create the visualization in the same section with the "Run" function.
 {d3.csv("data/data.csv").then(function(cdcData) {
     cdcData.forEach(function(d) {
         d.stateAbbr = d.stateAbbr;
         d.stateName = d.stateName;
         d.smoker = +d.smoker;
         d.physicalActivity = +d.physicalActivity;
-        d.householdIncome = +d.householdIncome;
+        d.income = +d.income;
         d.depression = +d.depression;
         d.diabetes = +d.diabetes;
         d.heartAttack = +d.heartAttack;
@@ -85,79 +85,91 @@ function VisualizeData(data) {
 
     // X axis labels
 
+    // Create a group element to hold our bottom axes labels.
+    svg.append("g").attr("class", "xAxisLabels");
+    var xAxisLabels = d3.select(".xAxisLabels");
+
+    // This will adjust the position of the labels to the appropriate place below the axis.
+    function placeXLabel() {
+        xAxisLabels.attr("transform", "translate(" + (width / 2) +
+            ", " +
+            (height + margin.top + 20) + ")"
+        );
+    }
+
+    placeXLabel()
+
         // "Smoker (%)" label
-        smokerLabel = svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", height + margin.top + 20)
+        xAxisLabels.append("text")
+            .attr("y", 0)
             .attr("value", "smoker")
             .attr("axis", "x")
-            .attr("class", "labelText")
+            .attr("selected", "active")
             .classed("active", true)
-            .classed("inactive", false)
             .style("text-anchor", "middle")
             .text("Smoker (%)");
 
         // "Physical Activity Last Month (%)" label
-        physicalActivityLabel = svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", height + margin.top + 45)
+        xAxisLabels.append("text")
+            .attr("y", 25)
             .attr("value", "physicalActivity")
             .attr("axis", "x")
-            .attr("class", "labelText")
-            .classed("active", false)
+            .attr("selected", "inactive")
             .classed("inactive", true)
             .style("text-anchor", "middle")
             .text("Physical Activity Last Month (%)");
 
         // "Household Income (Median)" label
-        householdIncomeLabel = svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", height + margin.top + 70)
-            .attr("value", "householdIncome")
+        xAxisLabels.append("text")
+            .attr("y", 50)
+            .attr("value", "income")
             .attr("axis", "x")
-            .attr("class", "labelText")
-            .classed("active", false)
+            .attr("selected", "inactive")
             .classed("inactive", true)
             .style("text-anchor", "middle")
             .text("Household Income (Median)");
 
     // Y axis labels
+
+    // Add a second label group, for the Y axis.
+    svg.append("g").attr("class", "yAxisLabels");
+    var yAxisLabels = d3.select(".yAxisLabels");
+
+    // Like before, adjust the position of the labels to the appropriate place to the left of the axis.
+    function placeYLabel() {
+        yAxisLabels.attr("transform", "translate(" + (70) + 
+            ", " + 
+            (0 - (height / 2)) + ")"
+            );
+        }
+    placeYLabel();
         
         //"Depression (%)" label
-        svg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left + 70)
-            .attr("x", 0 - (height / 2))
+        yAxisLabels.append("text")
+            .attr("transform", "rotate(90)")
             .attr("value", "depression")
             .attr("axis", "y")
-            .attr("class", "labelText")
-            .classed("active", false)
+            .attr("selected", "inactive")
             .classed("inactive", true)
             .style("text-anchor", "middle")
             .text("Depression (%)");       
 
         //"Heart Attack Ever (%)" label
-        svg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left + 45)
-            .attr("x", 0 - (height / 2))
+        yAxisLabels.append("text")
+            .attr("transform", "rotate(90)")
             .attr("value", "heartAttack")
             .attr("axis", "y")
-            .attr("class", "labelText")
+            .attr("selected", "active")
             .classed("active", true)
-            .classed("inactive", false)
             .style("text-anchor", "middle")
             .text("Heart Attack Ever (%)");
     
         //"Diabetes Ever (%)" label
-        svg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left + 20)
-            .attr("x", 0 - (height / 2))
+        yAxisLabels.append("text")
+            .attr("transform", "rotate(90)")
             .attr("value", "diabetes")
             .attr("axis", "y")
-            .attr("class", "labelText")
-            .classed("active", false)
+            .attr("selected", "inactive")
             .classed("inactive", true)
             .style("text-anchor", "middle")
             .text("Diabetes Ever (%)");
@@ -166,12 +178,11 @@ function VisualizeData(data) {
     // This section adds the interactive element where clicking on an axis changes the graph by updating the X or Y values to
     // match the selected input.
 
-    // Create a function which updates the axis title and appearance when clicked
-    function UpdateAxes(axis, clickedVariable) {
-        // Switch the currently active variable to inactive (one of three X- or Y-variables).
-        d3
-          .selectAll("labelText")
-          .filter("." + axis)
+    // Create a function which updates the X axis title and appearance when clicked
+    function UpdateXAxes(clickedVariable) {
+        // Switch the currently active variable to inactive (one of three variables).
+        xAxisLabels
+          .selectAll("text")
           .filter(".active")
           .classed("active", false)
           .classed("inactive", true);
@@ -181,7 +192,7 @@ function VisualizeData(data) {
         };
     
     // Now input code for changing the data, axis scale, and axis label when clicked/selected.
-    d3.selectAll("labelText").on("click", function() {
+    xAxisLabels.selectAll("text").on("click", function() {
     
     // Save the selected text so I can reference it.
     var selected = d3.select(this);
@@ -202,8 +213,8 @@ function VisualizeData(data) {
             // Update the domain of x.
             xScale.domain([0.9*(d3.min(data, (d) => {return d[selectedXAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedXAxis]; }))])
 
-            // Now use a transition when we update the xAxis.
-            svg.select(".xAxis").transition().duration(500).call(xAxis);
+            // Now use a transition when updating the xAxis.
+            xAxis.transition().duration(500).call(d3.axisBottom(xScale));
 
             // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
             d3.selectAll("circle").each(function() {
@@ -224,7 +235,7 @@ function VisualizeData(data) {
             });
 
             // Finally, change the classes of the last active label and the clicked label.
-            UpdateAxes(axis, selected);
+            UpdateXAxes(selected);
         }
         // In the other case, y is the saved axis:
         else {
@@ -235,7 +246,7 @@ function VisualizeData(data) {
             // Update the domain of y.
             yScale.domain([0.9*(d3.min(data, (d) => {return d[selectedYAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedYAxis]; }))])
         
-            // Now use a transition when we update the yAxis.
+            // Now use a transition when updating the yAxis.
             svg.select(".yAxis").transition().duration(500).call(yAxis);
         
             // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
