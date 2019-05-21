@@ -136,3 +136,5 @@ function physicalActivityUpdate({
     });
     
     physicalActivityLabel.on("click", physicalActivityUpdate)
+
+    .attr("font-weight", 700)
