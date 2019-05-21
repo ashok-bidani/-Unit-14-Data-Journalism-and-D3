@@ -28,7 +28,7 @@ var svg = d3.select("#chart").append("svg")
         d.heartAttack = +d.heartAttack;
     });
     VisualizeData(cdcData)
-});
+})
 };
 
 // VISUALIZATION
@@ -203,16 +203,14 @@ function VisualizeData(data) {
             xScale.domain([0.9*(d3.min(data, (d) => {return d[selectedXAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedXAxis]; }))])
 
             // Now use a transition when we update the xAxis.
-            svg.select(".xAxis").transition().duration(300).call(xAxis);
+            svg.select(".xAxis").transition().duration(500).call(xAxis);
 
             // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
             d3.selectAll("circle").each(function() {
             d3
                 .select(this)
                 .transition()
-                .attr("cx", function(d) {
-                return xScale(d[selectedXAxis]);
-                })
+                .attr("cx", ((d) => {return xScale(d[selectedXAxis]); }))
                 .duration(500);
             });
 
@@ -221,15 +219,46 @@ function VisualizeData(data) {
             d3
                 .select(this)
                 .transition()
-                .attr("dx", function(d) {
-                return xScale(d[selectedXAxis]);
-                })
+                .attr("x", ((d) => {return xScale(d[selectedXAxis]); }))
                 .duration(500);
             });
 
             // Finally, change the classes of the last active label and the clicked label.
             UpdateAxes(axis, selected);
-        };
-    };
-    });
+        }
+        // In the other case, y is the saved axis:
+        else {
+
+            // Make the selected variable the current value for "selectedXAxis"
+            selectedYAxis = axisValue;
+        
+            // Update the domain of y.
+            yScale.domain([0.9*(d3.min(data, (d) => {return d[selectedYAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedYAxis]; }))])
+        
+            // Now use a transition when we update the yAxis.
+            svg.select(".yAxis").transition().duration(500).call(yAxis);
+        
+            // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
+            d3.selectAll("circle").each(function() {
+            d3
+                .select(this)
+                .transition()
+                .attr("cy", ((d) => {return yScale(d[selectedYAxis]); }))
+                .duration(500);
+            });
+        
+            // Need change the location of the state texts, too: give each state text the same motion as the matching circle.
+            d3.selectAll(".stateText").each(function() {
+            d3
+                .select(this)
+                .transition()
+                .attr("y", ((d) => {return yScale(d[selectedYAxis]); }))
+                .duration(500);
+            });
+        
+            // Finally, change the classes of the last active label and the clicked label.
+            UpdateAxes(axis, selected);
+        }
+    }
+    })
 };
