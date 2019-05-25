@@ -36,7 +36,7 @@ var svg = d3.select("#chart").append("svg")
 function VisualizeData(data) {
 
     // Set default variables for X and Y values
-    var selectedXAxis = "smoker";
+    var selectedXAxis = "income";
     var selectedYAxis = "heartAttack";
 
     // Set the scales' domains and ranges
@@ -91,9 +91,7 @@ function VisualizeData(data) {
 
     // This will adjust the position of the labels to the appropriate place below the axis.
     function placeXLabel() {
-        xAxisLabels.attr("transform", "translate(" + (width / 2) +
-            ", " +
-            (height + margin.top + 20) + ")"
+        xAxisLabels.attr("transform", "translate(" + (width / 2) + ", " + (height + margin.top + 20) + ")"
         );
     }
 
@@ -137,16 +135,14 @@ function VisualizeData(data) {
 
     // Like before, adjust the position of the labels to the appropriate place to the left of the axis.
     function placeYLabel() {
-        yAxisLabels.attr("transform", "translate(" + (70) + 
-            ", " + 
-            (0 - (height / 2)) + ")"
-            );
+        yAxisLabels.attr("transform", "translate(0," + (height)/2 + ")rotate(-90)"
+        );
         }
     placeYLabel();
         
         //"Depression (%)" label
         yAxisLabels.append("text")
-            .attr("transform", "rotate(90)")
+            .attr("y", -100)
             .attr("value", "depression")
             .attr("axis", "y")
             .attr("selected", "inactive")
@@ -156,7 +152,7 @@ function VisualizeData(data) {
 
         //"Heart Attack Ever (%)" label
         yAxisLabels.append("text")
-            .attr("transform", "rotate(90)")
+            .attr("y", -75)
             .attr("value", "heartAttack")
             .attr("axis", "y")
             .attr("selected", "active")
@@ -166,7 +162,7 @@ function VisualizeData(data) {
     
         //"Diabetes Ever (%)" label
         yAxisLabels.append("text")
-            .attr("transform", "rotate(90)")
+            .attr("y", -50)
             .attr("value", "diabetes")
             .attr("axis", "y")
             .attr("selected", "inactive")
@@ -182,6 +178,19 @@ function VisualizeData(data) {
     function UpdateXAxes(clickedVariable) {
         // Switch the currently active variable to inactive (one of three variables).
         xAxisLabels
+          .selectAll("text")
+          .filter(".active")
+          .classed("active", false)
+          .classed("inactive", true);
+    
+        // Switch the variable just clicked to active.
+        clickedVariable.classed("inactive", false).classed("active", true);
+        };
+
+    // Similar function for Y axis
+    function UpdateYAxes(clickedVariable) {
+        // Switch the currently active variable to inactive (one of three variables).
+        yAxisLabels
           .selectAll("text")
           .filter(".active")
           .classed("active", false)
@@ -247,7 +256,7 @@ function VisualizeData(data) {
             yScale.domain([0.9*(d3.min(data, (d) => {return d[selectedYAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedYAxis]; }))])
         
             // Now use a transition when updating the yAxis.
-            svg.select(".yAxis").transition().duration(500).call(yAxis);
+            yAxis.transition().duration(500).call(d3.axisLeft(yScale));
         
             // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
             d3.selectAll("circle").each(function() {
@@ -268,7 +277,7 @@ function VisualizeData(data) {
             });
         
             // Finally, change the classes of the last active label and the clicked label.
-            UpdateAxes(axis, selected);
+            UpdateYAxes(selected);
         }
     }
     })
