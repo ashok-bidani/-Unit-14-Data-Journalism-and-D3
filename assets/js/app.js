@@ -36,7 +36,7 @@ var svg = d3.select("#chart").append("svg")
 function VisualizeData(data) {
 
     // Set default variables for X and Y values
-    var selectedXAxis = "income";
+    var selectedXAxis = "smoker";
     var selectedYAxis = "heartAttack";
 
     // Set the scales' domains and ranges
