@@ -60,6 +60,29 @@ function VisualizeData(data) {
             .attr("class", "yAxis")
             .call(d3.axisLeft(yScale));
 
+    // Tooltip: Here I create a function to set up the tool tip. This will display information about the data when moused over.
+    var toolTip = d3.tip()
+    .attr("class", "d3-tip")
+    .offset([40, -70])
+    .html(function(d) {
+
+        // Define three variables: stateInfo, xInfo, yInfo which contain the text information to be displayed.
+        var stateInfo = "<div>" + d.stateName + "</div>";
+        var xInfo
+
+        // The xInfo is a bit more intensive because it can either be a percentage (physical activity, smoking)
+        // or a numerical dollar value (income).
+        if (selectedXAxis === "income") {xInfo = "<div>" + selectedXAxis + ": $" + d[selectedXAxis] + "</div>";}
+        else {xInfo = "<div>" + selectedXAxis + ": " + d[selectedXAxis] + "%</div>";}
+
+        // yInfo is always a percentage.
+        var yInfo = "<div>" + selectedYAxis + ": " + d[selectedYAxis] + "%</div>";
+
+        // Finally, display the information.
+        return stateInfo + xInfo + yInfo;
+    });
+    svg.call(toolTip);
+
     // Add a circle element for each data point
     svg.append("g")
         .selectAll("circle")
@@ -67,8 +90,13 @@ function VisualizeData(data) {
         .join("circle")
         .attr("cx", ((d) => {return xScale(d[selectedXAxis]); }))
         .attr("cy", ((d) => {return yScale(d[selectedYAxis]); }))
-        .attr("r", 12);
-        
+        .attr("r", 12)
+        // Tooltip rules: show tooltip when mousing-over; remove when mousing-out.
+        .on("mouseover", ((d) => {
+            toolTip.show(d, this)}))
+        .on("mouseout", ((d) => {
+            toolTip.hide(d)}));
+
     // Add state labels to scatterplot circles
     svg.append("g")
         .selectAll("text")
@@ -81,7 +109,12 @@ function VisualizeData(data) {
         .attr("dx", "-0.65em")
         .attr("dy", "0.4em")
         .attr("font-size", "10px")
-        .text((d) => {return d.stateAbbr});
+        .text((d) => {return d.stateAbbr})
+        // Tooltip rules: show tooltip, hide tooltip etc.
+        .on("mouseover", ((d) => {
+            toolTip.show(d)}))
+        .on("mouseout", ((d) => {
+            toolTip.hide(d)}));
 
     // X axis labels
 
@@ -91,8 +124,7 @@ function VisualizeData(data) {
 
     // This will adjust the position of the labels to the appropriate place below the axis.
     function placeXLabel() {
-        xAxisLabels.attr("transform", "translate(" + (width / 2) + ", " + (height + margin.top + 20) + ")"
-        );
+        xAxisLabels.attr("transform", "translate(" + (width / 2) + ", " + (height + margin.top + 20) + ")");
     }
 
     placeXLabel()
@@ -135,8 +167,7 @@ function VisualizeData(data) {
 
     // Like before, adjust the position of the labels to the appropriate place to the left of the axis.
     function placeYLabel() {
-        yAxisLabels.attr("transform", "translate(0," + (height)/2 + ")rotate(-90)"
-        );
+        yAxisLabels.attr("transform", "translate(0," + (height)/2 + ")rotate(-90)");
         }
     placeYLabel();
         
@@ -177,11 +208,10 @@ function VisualizeData(data) {
     // Create a function which updates the X axis title and appearance when clicked
     function UpdateXAxis(clickedVariable) {
         // Switch the currently active variable to inactive (one of three variables).
-        xAxisLabels
-          .selectAll("text")
-          .filter(".active")
-          .classed("active", false)
-          .classed("inactive", true);
+        xAxisLabels.selectAll("text")
+            .filter(".active")
+            .classed("active", false)
+            .classed("inactive", true);
     
         // Switch the variable just clicked to active.
         clickedVariable.classed("inactive", false).classed("active", true);
@@ -190,11 +220,10 @@ function VisualizeData(data) {
     // Similar function for Y axis
     function UpdateYAxis(clickedVariable) {
         // Switch the currently active variable to inactive (one of three variables).
-        yAxisLabels
-          .selectAll("text")
-          .filter(".active")
-          .classed("active", false)
-          .classed("inactive", true);
+        yAxisLabels.selectAll("text")
+            .filter(".active")
+            .classed("active", false)
+            .classed("inactive", true);
     
         // Switch the variable just clicked to active.
         clickedVariable.classed("inactive", false).classed("active", true);
@@ -223,8 +252,7 @@ function VisualizeData(data) {
 
         // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
         d3.selectAll("circle").each(function() {
-        d3
-            .select(this)
+        d3.select(this)
             .transition()
             .attr("cx", ((d) => {return xScale(d[selectedXAxis]); }))
             .duration(500);
@@ -232,8 +260,7 @@ function VisualizeData(data) {
 
         // Need change the location of the state texts, too: give each state text the same motion as the matching circle.
         d3.selectAll(".stateText").each(function() {
-        d3
-            .select(this)
+        d3.select(this)
             .transition()
             .attr("x", ((d) => {return xScale(d[selectedXAxis]); }))
             .duration(500);
@@ -267,8 +294,7 @@ function VisualizeData(data) {
         
         // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
         d3.selectAll("circle").each(function() {
-        d3
-            .select(this)
+        d3.select(this)
             .transition()
             .attr("cy", ((d) => {return yScale(d[selectedYAxis]); }))
             .duration(500);
@@ -276,8 +302,7 @@ function VisualizeData(data) {
         
         // Need change the location of the state texts, too: give each state text the same motion as the matching circle.
         d3.selectAll(".stateText").each(function() {
-        d3
-            .select(this)
+        d3.select(this)
             .transition()
             .attr("y", ((d) => {return yScale(d[selectedYAxis]); }))
             .duration(500);
