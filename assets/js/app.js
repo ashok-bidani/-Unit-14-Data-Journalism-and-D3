@@ -175,7 +175,7 @@ function VisualizeData(data) {
     // match the selected input.
 
     // Create a function which updates the X axis title and appearance when clicked
-    function UpdateXAxes(clickedVariable) {
+    function UpdateXAxis(clickedVariable) {
         // Switch the currently active variable to inactive (one of three variables).
         xAxisLabels
           .selectAll("text")
@@ -188,7 +188,7 @@ function VisualizeData(data) {
         };
 
     // Similar function for Y axis
-    function UpdateYAxes(clickedVariable) {
+    function UpdateYAxis(clickedVariable) {
         // Switch the currently active variable to inactive (one of three variables).
         yAxisLabels
           .selectAll("text")
@@ -209,76 +209,82 @@ function VisualizeData(data) {
     // Only update the display if an inactive display is selected (otherwise, keep the display - graph, axes, labels - the same)
     if (selected.classed("inactive")) {
 
-        // Save the axis and axis label from the selected text.
-        var axis = selected.attr("axis");
+        // Save the axis label from the selected text.
         var axisValue = selected.attr("value");
 
-        // When x is the saved axis, execute this:
-        if (axis === "x") {
+        // Make the selected variable the current value for "selectedXAxis"
+        selectedXAxis = axisValue;
 
-            // Make the selected variable the current value for "selectedXAxis"
-            selectedXAxis = axisValue;
+        // Update the domain of x.
+        xScale.domain([0.9*(d3.min(data, (d) => {return d[selectedXAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedXAxis]; }))])
 
-            // Update the domain of x.
-            xScale.domain([0.9*(d3.min(data, (d) => {return d[selectedXAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedXAxis]; }))])
+        // Now use a transition when updating the xAxis.
+        xAxis.transition().duration(500).call(d3.axisBottom(xScale));
 
-            // Now use a transition when updating the xAxis.
-            xAxis.transition().duration(500).call(d3.axisBottom(xScale));
+        // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
+        d3.selectAll("circle").each(function() {
+        d3
+            .select(this)
+            .transition()
+            .attr("cx", ((d) => {return xScale(d[selectedXAxis]); }))
+            .duration(500);
+        });
 
-            // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
-            d3.selectAll("circle").each(function() {
-            d3
-                .select(this)
-                .transition()
-                .attr("cx", ((d) => {return xScale(d[selectedXAxis]); }))
-                .duration(500);
-            });
+        // Need change the location of the state texts, too: give each state text the same motion as the matching circle.
+        d3.selectAll(".stateText").each(function() {
+        d3
+            .select(this)
+            .transition()
+            .attr("x", ((d) => {return xScale(d[selectedXAxis]); }))
+            .duration(500);
+        });
 
-            // Need change the location of the state texts, too: give each state text the same motion as the matching circle.
-            d3.selectAll(".stateText").each(function() {
-            d3
-                .select(this)
-                .transition()
-                .attr("x", ((d) => {return xScale(d[selectedXAxis]); }))
-                .duration(500);
-            });
+        // Finally, change the classes of the last active label and the clicked label.
+        UpdateXAxis(selected);
+    }
+    });
 
-            // Finally, change the classes of the last active label and the clicked label.
-            UpdateXAxes(selected);
-        }
-        // In the other case, y is the saved axis:
-        else {
-
-            // Make the selected variable the current value for "selectedXAxis"
-            selectedYAxis = axisValue;
+    // In the other case, y is the selected axis:
+    yAxisLabels.selectAll("text").on("click", function() {
+    
+    // Save the selected text.
+    var selected = d3.select(this);
         
-            // Update the domain of y.
-            yScale.domain([0.9*(d3.min(data, (d) => {return d[selectedYAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedYAxis]; }))])
+    // Only update the display if an inactive display is selected (otherwise, keep the display - graph, axes, labels - the same)
+    if (selected.classed("inactive")) {
         
-            // Now use a transition when updating the yAxis.
-            yAxis.transition().duration(500).call(d3.axisLeft(yScale));
+        // Save the axis label from the selected text.
+        var axisValue = selected.attr("value");
+
+        // Make the selected variable the current value for "selectedYAxis"
+        selectedYAxis = axisValue;
         
-            // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
-            d3.selectAll("circle").each(function() {
-            d3
-                .select(this)
-                .transition()
-                .attr("cy", ((d) => {return yScale(d[selectedYAxis]); }))
-                .duration(500);
-            });
+        // Update the domain of y.
+        yScale.domain([0.9*(d3.min(data, (d) => {return d[selectedYAxis]; })), 1.1*(d3.max(data, (d) => {return d[selectedYAxis]; }))])
         
-            // Need change the location of the state texts, too: give each state text the same motion as the matching circle.
-            d3.selectAll(".stateText").each(function() {
-            d3
-                .select(this)
-                .transition()
-                .attr("y", ((d) => {return yScale(d[selectedYAxis]); }))
-                .duration(500);
-            });
+        // Now use a transition when updating the yAxis.
+        yAxis.transition().duration(500).call(d3.axisLeft(yScale));
         
-            // Finally, change the classes of the last active label and the clicked label.
-            UpdateYAxes(selected);
-        }
+        // Now update the location of the circles. Provide a transition for each state circle from the original to the new location.
+        d3.selectAll("circle").each(function() {
+        d3
+            .select(this)
+            .transition()
+            .attr("cy", ((d) => {return yScale(d[selectedYAxis]); }))
+            .duration(500);
+        });
+        
+        // Need change the location of the state texts, too: give each state text the same motion as the matching circle.
+        d3.selectAll(".stateText").each(function() {
+        d3
+            .select(this)
+            .transition()
+            .attr("y", ((d) => {return yScale(d[selectedYAxis]); }))
+            .duration(500);
+        });
+        
+        // Finally, change the classes of the last active label and the clicked label.
+        UpdateYAxis(selected);
     }
     })
 };
