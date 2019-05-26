@@ -23,7 +23,7 @@ The three Y variables are:
 The default relationship is set to Smoking (%) versus Heart Attack Ever (%).
 
 ## Demo
-Here is a video demonstrating myself using the display (I show 6 relationships of the possible 9).
+Here is a video of myself demonstrating use of the display (I show 6 relationships of the possible 9).
 ![Demo](https://user-images.githubusercontent.com/36421213/58377556-15682e00-7f49-11e9-9463-7d756520b77e.gif  "display usage demo")
 
 ## Sources
